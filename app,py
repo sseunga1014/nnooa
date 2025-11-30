@@ -1,0 +1,29 @@
+import streamlit as st
+from src.inference import load_model, predict_price
+
+st.title("🏠 House Price Prediction App")
+
+model, scaler = load_model("xgb")
+
+st.write("입력값을 넣어 집값을 예측해보세요.")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    OverallQual = st.slider("Overall Quality", 1, 10, 5)
+    GrLivArea = st.number_input("Living Area (sq ft)", 500, 5000, 1500)
+
+with col2:
+    YearBuilt = st.number_input("Year Built", 1900, 2024, 2000)
+    GarageCars = st.number_input("Garage Cars", 0, 4, 1)
+
+input_data = {
+    "OverallQual": OverallQual,
+    "GrLivArea": GrLivArea,
+    "YearBuilt": YearBuilt,
+    "GarageCars": GarageCars
+}
+
+if st.button("Predict Price"):
+    pred = predict_price(model, scaler, input_data)
+    st.success(f"예측된 집값: ${pred:,.0f}")
